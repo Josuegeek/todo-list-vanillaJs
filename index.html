@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart TodoList</title>
+    <link rel="stylesheet" href="./assets/style.css">
+    <link rel="stylesheet" href="./assets/font-awesome/fontawesome.css">
+</head>
+
+<body>
+
+    <div class="main-container">
+        <form class="invisible" id="task-form" action="#">
+            <div id="form-container" class="form-container">
+                <i id="form-closer" class="fa fa-close closer"></i>
+                <div class="input-container">
+                    <input class="invisible" id="taskId" type="text">
+                    <label for="task-name">Description de la tâche</label>
+                    <input id="task-name" name="task-name" type="text" required>
+                </div>
+                <div class="input-container">
+                    <label for="deadline">Date et heure du DeadLine</label>
+                    <div class="row d-gap">
+                        <input id="deadline" name="deadline" type="date" required>
+                        <input id="deadline-time" name="deadline-time" type="time" required>
+                    </div>
+
+                </div>
+                <div class="row d-gap">
+                    <label for="task-check">Marquer comme fait</label>
+                    <input id="task-check" name="task-check" type="checkbox">
+                </div>
+                <button id="btn-submit" class="btn bg-primary">Ajouter la tâche</button>
+            </div>
+        </form>
+        <div class="title">
+            <h1>Smart TodoList</h1>
+            <small>by iswa</small>
+        </div>
+        <div class="row xx-gap ">
+            <button class="btn bg-primary" id="add-task-btn">Ajouter une tâche</button>
+            <button id="show-trash-btn" class="btn" >Afficher la corbeille</button>
+        </div>
+        <div class="filters-container">
+            <div class="row d-gap align-center">
+                <label for="filter-select">Filtre </label>
+                <select name="filter-select" id="filter-select">
+                    <option value="tout">TOUTES</option>
+                    <option value="fait">ACCOMPLIE</option>
+                    <option value="en-cours">EN COURS</option>
+                    <option value="rates">RATEES</option>
+                </select>
+                <div class="search-container">
+                    <input id="search-input" type="text">
+                    <i id="search-btn" class="fa fa-search btn bg-primary-t"></i>
+                    <i id="reload-btn" class="fa fa-rotate btn"></i>
+                </div>
+            </div>
+
+        </div>
+        <div class="task-table-container">
+            <h2>Liste des tâches</h2>
+            <table id="task-table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Tâches</th>
+                        <th>Date d'ajout</th>
+                        <th>DeadLine</th>
+                        <th>Statut</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="task-tbody">
+                    
+                </tbody>
+            </table>
+        </div>
+        <div id="trash-container" class="invisible">
+            <div id="trash-table-container" class="invisible">
+                <h2>La corbeille</h2>
+                <i id="trash-closer" class="fa fa-close closer"></i>
+                <table id="trash-task-table">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Tâches</th>
+                            <th>Date</th>
+                            <th>DeadLine</th>
+                            <th>Statut</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Faire la lessive</td>
+                            <td>Ajouté il y a 2 min</td>
+                            <td>le 02 mai 2024 à 11h:00</td>
+                            <td>
+                                <div class="status done">Accomplie</div>
+                            </td>
+                            <td>
+                                <div class="row d-gap">
+                                    <i class="fa fa-rotate-left  small-btn"></i>
+                                    <i class="fa fa-remove small-btn"></i>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Faire la lessive</td>
+                            <td>Ajouté il y a 2 min</td>
+                            <td>le 02 mai 2024 à 11h:00</td>
+                            <td>
+                                <div class="status process">En cours</div>
+                            </td>
+                            <td>
+                                <div class="row d-gap">
+                                    <i class="fa fa-rotate-left  small-btn"></i>
+                                    <i class="fa fa-remove small-btn"></i>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Faire la lessive</td>
+                            <td>Ajouté il y a 2 min</td>
+                            <td>le 02 mai 2024 à 11h:00</td>
+                            <td>
+                                <div class="status late">Passée</div>
+                            </td>
+                            <td>
+                                <div class="row d-gap">
+                                    <i class="fa fa-rotate-left small-btn"></i>
+                                    <i class="fa fa-remove small-btn"></i>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="trash-icon-container">
+            <i id="trash-icon" class="fa fa-trash-can"></i>
+        </div>
+    </div>
+
+    <script src="./assets/script/index.js"></script>
+</body>
+
+</html>
