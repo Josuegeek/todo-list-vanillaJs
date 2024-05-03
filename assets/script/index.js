@@ -8,6 +8,7 @@ const formCloser = document.getElementById("form-closer"),
     trashIcon = document.getElementById("trash-icon"),
     trashTable = document.getElementById("trash-task-table"),
     taskTbody = document.getElementById('task-tbody'),
+    trashTbody = document.getElementById('trash-table-tbody'),
     searchBtn = document.getElementById("search-btn"),
     searchInput = document.getElementById("search-input"),
     filterSelect = document.getElementById("filter-select"),
@@ -106,7 +107,7 @@ taskForm.addEventListener("submit", (e) => {
         statut
     }
 
-    if(btnSubmit.textContent.includes("Modifier")){
+    if (btnSubmit.textContent.includes("Modifier")) {
         const gettedTaskId = taskIdInput.value;
         //const taskFind = allTasks.find(t => t.name == task.name);
         updateTask(gettedTaskId, task);
@@ -171,8 +172,20 @@ function loadTasks() {
 
     allTasks.forEach(task => {
         //console.log("adding tableau", task)
-        addTasksToTasksTab(task, num);
+        addTasksToTasksTab(task, num, "tasks");
         num++;
+    });
+}
+
+//fonction pour recharger les taches de la corbeille
+function loadRemovedTasks(){
+    let num = removedTasks.length;
+    trashTbody.innerHTML = "";
+
+    removedTasks.forEach(task => {
+        //console.log("adding tableau", task)
+        addTasksToTasksTab(task, num,"trash");
+        num--;
     });
 }
 
@@ -231,13 +244,12 @@ function createTask(task) {
     }
     allTasks.push(task);
     loadTasks();
-    alert("Tâche ajouté avec success");
     hideForm();
     taskForm.reset();
 }
 
 //fonction d'ajout d'une tâche dans le tableau
-function addTasksToTasksTab(taskObject, num) {
+function addTasksToTasksTab(taskObject, num, tab) {
     const taskId = taskObject.taskId;
     let statut = "Accomplie", statutClass = "status done";
 
@@ -281,17 +293,32 @@ function addTasksToTasksTab(taskObject, num) {
         innerHTML: `<div id="taskStatus${taskId}" class="${statutClass}">${statut}</div>`
     });
 
+    let actionHtml = `<div class="row d-gap">
+                        <i onclick="showFrom('${taskId}')" class="fa-regular fa-edit small-btn bg-primary-t"></i>
+                        <i ${(statut != "Accomplie") ? "onclick=\"checkTask('${taskId}')\" class=\"fa fa-check small-btn process\"" : "class=\"fa fa-check small-btn\""}></i>
+                        <i onclick="moveToTrash('${taskId}')" class="fa fa-trash small-btn"></i>
+                    </div>`;
+    
+    if(tab=="trash"){
+        actionHtml=`<div class="row d-gap">
+                        <i onclick="restoreTask('${taskId}')" class="fa fa-rotate-left small-btn"></i>
+                        <i onclick="removeTask('${taskId}')" class="fa fa-remove small-btn"></i>
+                    </div>`
+    }
+
     const taskControlsTd = createElement('td', {
-        innerHTML: `<div class="row d-gap">
-                            <i onclick="showFrom('${taskId}')" class="fa-regular fa-edit small-btn bg-primary-t"></i>
-                            <i onclick="checkTask('${taskId}')" class="fa fa-check small-btn process"></i>
-                            <i onclick="moveToTrash('${taskId}')" class="fa fa-trash small-btn"></i>
-                        </div>`
+        innerHTML: actionHtml
     });
 
     task.append(taskIdTd, taskNameTd, taskDateTd, taskDeadLineTd, taskStatutTd, taskControlsTd);
 
-    taskTbody.appendChild(task);
+    if(tab=="tasks"){
+        taskTbody.appendChild(task);
+    }
+    else{
+        trashTbody.appendChild(task);
+    }
+    
     //console.log(taskTbody);
 }
 
@@ -309,6 +336,72 @@ function updateTask(taskId, newTask) {
     }
     else {
         alert("La tâche specifié est introuvable");
+    }
+}
+
+//check task
+function checkTask(taskId) {
+    const taskIndex = allTasks.findIndex(t => t.taskId == taskId);
+
+    if (confirm("Noter cette tâche comme accomplie ?")) {
+        if (taskIndex >= 0) {
+            allTasks[taskIndex].statut = "Accomplie";
+
+            loadTasks();
+            hideForm();
+        }
+        else {
+            alert("La tâche specifié est introuvable");
+        }
+    }
+
+}
+
+//move to trash
+function moveToTrash(taskId) {
+    if (confirm("Voulez-vous supprimer cette tâche?")) {
+        const taskIndex = allTasks.findIndex(t => t.taskId == taskId);
+        const task = allTasks.find(t => t.taskId == taskId);
+        if (taskIndex>=0){
+            allTasks=allTasks.splice(taskIndex, taskIndex);
+            //console.log(allTasks, taskIndex,allTasks.splice(taskIndex, taskIndex));
+            removedTasks.unshift(task);
+            loadTasks();
+            loadRemovedTasks();
+            alert("Tâche placée dans la corbeille");
+        }
+    }
+}
+
+//suppression definitive du task
+function removeTask(taskId){
+    if (confirm("Voulez-vous supprimer definitivement cette tâche?")) {
+        const taskIndex = removedTasks.findIndex(t => t.taskId == taskId);
+        const task = removedTasks.find(t => t.taskId == taskId);
+        if (taskIndex>=0){
+            removedTasks=removedTasks.splice(taskIndex, taskIndex);
+            //console.log(allTasks, taskIndex,allTasks.splice(taskIndex, taskIndex));
+            //removedTasks.unshift(task);
+            //loadTasks();
+            loadRemovedTasks();
+            alert("Tâche Supprimée definitivement");
+        }
+    }
+}
+
+//retaurer la tâche
+function restoreTask(taskId) {
+    if (confirm("Voulez-vous retaurer cette tâche?")) {
+        const taskIndex = removedTasks.findIndex(t => t.taskId == taskId);
+        const task = removedTasks.find(t => t.taskId == taskId);
+        if (taskIndex>=0){
+            removedTasks=removedTasks.splice(taskIndex, taskIndex);
+            //console.log(allTasks, taskIndex,allTasks.splice(taskIndex, taskIndex));
+            allTasks.push(task);
+            loadTasks();
+            loadRemovedTasks();
+            alert("Tâche restaurée avec success");
+        }
     }
 }
 
@@ -345,26 +438,27 @@ function getDifferenceInDay(date) {
 function formatDateToShow(date) {
     let formatedDateString = "";
     if (getDifferenceInDay(date) >= 1) {
-        formatedDateString = `Ajouté il y a ${getDifferenceInDay(date)} jour(s)`;
+        formatedDateString = `il y a ${getDifferenceInDay(date)} jour(s)`;
     }
     else if (getDifferenceInHour(date) >= 1) {
-        formatedDateString = `Ajouté il y a ${getDifferenceInHour(date)} heure(s)`;
+        formatedDateString = `il y a ${getDifferenceInHour(date)} heure(s)`;
     }
     else if (getDifferenceInMinutes(date) >= 1) {
-        formatedDateString = `Ajouté il y a ${getDifferenceInMinutes(date)} minute(s)`;
+        formatedDateString = `il y a ${getDifferenceInMinutes(date)} minute(s)`;
     }
     else {
-        formatedDateString = `Ajouté il y a ${getDifferenceInSecond(date)} seconde(s)`;
+        formatedDateString = `il y a ${getDifferenceInSecond(date)} seconde(s)`;
     }
     return formatedDateString;
 }
 
-function getFormatedDate(date){
-    return `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2, '0')}-${(date.getDate()).toString().padStart(2, '0')}`;
+function getFormatedDate(date) {
+    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${(date.getDate()).toString().padStart(2, '0')}`;
 }
 
 //timer pour actualiser les tasks automatiquement
 setInterval(function () {
     //console.log("Fonction seconde")
     loadTasks();
+    loadRemovedTasks();
 }, 10000);
