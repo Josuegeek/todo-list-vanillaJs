@@ -295,7 +295,7 @@ function addTasksToTasksTab(taskObject, num, tab) {
 
     let actionHtml = `<div class="row d-gap">
                         <i onclick="showFrom('${taskId}')" class="fa-regular fa-edit small-btn bg-primary-t"></i>
-                        <i ${(statut != "Accomplie") ? "onclick=\"checkTask('${taskId}')\" class=\"fa fa-check small-btn process\"" : "class=\"fa fa-check small-btn\""}></i>
+                        <i ${(statut != "Accomplie") ? `onclick="checkTask('${taskId}')" class="fa fa-check small-btn process""` : "class=\"fa fa-check small-btn\""}></i>
                         <i onclick="moveToTrash('${taskId}')" class="fa fa-trash small-btn"></i>
                     </div>`;
     
@@ -342,7 +342,7 @@ function updateTask(taskId, newTask) {
 //check task
 function checkTask(taskId) {
     const taskIndex = allTasks.findIndex(t => t.taskId == taskId);
-
+    console.log(taskIndex, taskId, allTasks);
     if (confirm("Noter cette tâche comme accomplie ?")) {
         if (taskIndex >= 0) {
             allTasks[taskIndex].statut = "Accomplie";
@@ -363,8 +363,8 @@ function moveToTrash(taskId) {
         const taskIndex = allTasks.findIndex(t => t.taskId == taskId);
         const task = allTasks.find(t => t.taskId == taskId);
         if (taskIndex>=0){
-            allTasks=allTasks.splice(taskIndex, taskIndex);
-            //console.log(allTasks, taskIndex,allTasks.splice(taskIndex, taskIndex));
+            allTasks.splice(taskIndex, 1);
+            console.log(allTasks, taskIndex,allTasks.splice(taskIndex, taskIndex));
             removedTasks.unshift(task);
             loadTasks();
             loadRemovedTasks();
@@ -379,7 +379,7 @@ function removeTask(taskId){
         const taskIndex = removedTasks.findIndex(t => t.taskId == taskId);
         const task = removedTasks.find(t => t.taskId == taskId);
         if (taskIndex>=0){
-            removedTasks=removedTasks.splice(taskIndex, taskIndex);
+            removedTasks.splice(taskIndex, 1);
             //console.log(allTasks, taskIndex,allTasks.splice(taskIndex, taskIndex));
             //removedTasks.unshift(task);
             //loadTasks();
@@ -395,9 +395,10 @@ function restoreTask(taskId) {
         const taskIndex = removedTasks.findIndex(t => t.taskId == taskId);
         const task = removedTasks.find(t => t.taskId == taskId);
         if (taskIndex>=0){
-            removedTasks=removedTasks.splice(taskIndex, taskIndex);
+            removedTasks.splice(taskIndex, 1);
             //console.log(allTasks, taskIndex,allTasks.splice(taskIndex, taskIndex));
             allTasks.push(task);
+            console.log(allTasks)
             loadTasks();
             loadRemovedTasks();
             alert("Tâche restaurée avec success");
